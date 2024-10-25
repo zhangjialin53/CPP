@@ -1,0 +1,146 @@
+类和对象的使用-4-程序分析
+时间限制	1000ms	空间限制	256MB
+
+定义一个学期成绩（SemesterGrad）对象包括语文成绩、数学成绩、英语成绩和平均成绩。其中，定义一个函数计算得出平均成绩。
+
+定义一个学生（Student）对象，对象属性包括学生名字、学号、四个学期成绩（SemesterGrad）数组。
+
+定义一个函数输出学生的信息。
+
+TO-DO
+注意：
+
+每个学生的信息从键盘读入。
+平均成绩也要更新。
+输入数据说明
+一共 5 行，第 1 行 2 个值， 分别是 1 个字符串和 1 个整数，分别代表每个学生的名字、学号，后面 4 行 3 个值，是 3 个整数，分别代表语文成绩、数学成绩、英语成绩，中间用空格分隔开。
+不需要考虑输入错误，所有整数类型为 int32。
+输出格式说明
+在学生信息输入之后，按照给定示例输出学生信息。
+程序应给出相应的人性化提示。
+测试样例
+输入：
+
+sophia 2312004
+91 75 88
+87 96 93
+81 73 82
+83 94 86
+输出：
+
+==学生信息==
+姓名：sophia
+学号：2312004
+==学期成绩==
+=学期1=
+语文成绩：91
+数学成绩：75
+英语成绩：88
+平均成绩：84.6667
+=学期2=
+语文成绩：87
+数学成绩：96
+英语成绩：93
+平均成绩：92
+=学期3=
+语文成绩：81
+数学成绩：73
+英语成绩：82
+平均成绩：78.6667
+=学期4=
+语文成绩：83
+数学成绩：94
+英语成绩：86
+平均成绩：87.6667
+
+#include <iostream>
+#include <iomanip>
+#include <string>
+
+using namespace std;
+
+// 定义学期成绩类
+class SemesterGrad {
+public:
+    int chinese;  // 语文成绩
+    int math;     // 数学成绩
+    int english;  // 英语成绩
+    double average;  // 平均成绩
+
+    // 构造函数
+    SemesterGrad() : chinese(0), math(0), english(0), average(0.0) {}
+
+    // 设置成绩并计算平均成绩
+    void setGrades(int c, int m, int e) {
+        chinese = c;
+        math = m;
+        english = e;
+        average = calculateAverage();
+    }
+
+    // 计算平均成绩的函数
+    double calculateAverage() {
+        return (chinese + math + english) / 3.0;
+    }
+
+    // 输出当前学期成绩
+    void printSemester(int semesterNumber) const {
+        cout << "=学期" << semesterNumber << "=" << endl;
+        cout << "语文成绩：" << chinese << endl;
+        cout << "数学成绩：" << math << endl;
+        cout << "英语成绩：" << english << endl;
+        // 输出平均成绩保留4位小数
+        cout << "平均成绩：" << fixed << setprecision(4) << average << endl;
+    }
+};
+
+// 定义学生类
+class Student {
+public:
+    string name;      // 学生姓名
+    int id;           // 学号
+    SemesterGrad semesters[4];  // 四个学期成绩
+
+    // 构造函数
+    Student(string n, int i) : name(n), id(i) {}
+
+    // 输入每个学期成绩
+    void setSemesterGrades(int semester, int chinese, int math, int english) {
+        semesters[semester].setGrades(chinese, math, english);
+    }
+
+    // 输出学生信息
+    void printInfo() const {
+        cout << "==学生信息==" << endl;
+        cout << "姓名：" << name << endl;
+        cout << "学号：" << id << endl;
+        cout << "==学期成绩==" << endl;
+        for (int i = 0; i < 4; ++i) {
+            semesters[i].printSemester(i + 1);
+        }
+    }
+};
+
+int main() {
+    // 输入学生信息
+    string name;
+    int id;
+    cout << "请输入学生的姓名和学号: ";
+    cin >> name >> id;
+
+    // 创建学生对象
+    Student student(name, id);
+
+    // 输入4个学期的成绩
+    for (int i = 0; i < 4; i++) {
+        int chinese, math, english;
+        cout << "请输入第 " << i + 1 << " 个学期的语文、数学和英语成绩: ";
+        cin >> chinese >> math >> english;
+        student.setSemesterGrades(i, chinese, math, english);
+    }
+
+    // 输出学生信息和每个学期的成绩
+    student.printInfo();
+
+    return 0;
+}

@@ -1,0 +1,169 @@
+类和对象的使用-8-日期计算器
+时间限制	1000ms	空间限制	256MB
+
+类和对象的使用-8-日期计算器
+定义一个对象，对象属性包括年、月、日，对象成员函数实现输入年、月、日，计算并输出该日期在本年中是第几天。注意闰年问题
+
+TO-DO
+注意：
+
+需要分别实现构建时赋值和构建后赋值，故一共需要输入输出两次，注意检查测试点。
+对象结构规定如下
+class dateToDay
+{
+public:
+    dateToDay(int, int, int);    // 通过传参构建
+    // dateToDay();    // 构建时从键盘读入 实现方式二选一
+    void setDate(int, int, int); // 设置日期
+    // void setDate(); // 从键盘读入设置日期 实现方式二选一
+    // 合法性检查应该在构建/设置时完成
+    void display();    // 将计算结果输出(即本年内第几天)
+private:
+    bool checkLeap();  // 该函数用于检查闰年
+    bool checkValid(); // 该函数用于检查合法
+    int computeDay();  // 该函数用于计算日期
+    int year;
+    int month;
+    int day;
+}
+需考虑输入月、日的合法性，若不合法，需提示输入错误，结束程序即可。
+
+若错误发生在构建函数内(即第一行测试数据)，同样直接结束程序不需要理会第二行测试数据。
+
+允许的错误格式请详见限制。
+
+输入数据说明
+所有测试数据共 2 行，每行三项数据。
+第一项保证为整数，表示要计算日期的年，范围 1-9999。
+第二项表示要计算日期的月，合法数据为整数，范围 1-12。除此之外，有可能会给出字符或浮点数等非法数据。
+第三项表示要计算日期的日，合法数据为整数，范围 1-28/29/30/31，需根据月份以及闰年决定，注意做好检查。除此之外，有可能会给出字符或浮点数等非法数据。非法数据输出 Illegal 
+输出格式说明
+输出应至少包含一个整数，表示你计算出该日期为本年内的第几天。
+此外程序应给出适当的人性化提示。
+测试样例
+输入：
+
+2097 9 23 
+6537 3 17
+输出：
+
+2097-9-23是2097年的第266天
+6537-3-17是6537年的第76天
+输入：
+
+5160 4 F 
+3739 -8152.4279581529145 X
+输出：
+
+请输入一个日期:
+Illegal 
+输入：
+
+3494 0 55 
+5951 6 90
+输出：
+
+请输入一个日期:
+Illegal 
+
+#include <iostream>
+#include <iomanip>
+#include <string>
+using namespace std;
+
+class dateToDay {
+public:
+    // 构造函数，初始化日期
+    dateToDay(int y, int m, int d) {
+        setDate(y, m, d);
+    }
+    
+    // 设置日期函数
+    void setDate(int y, int m, int d) {
+        year = y;
+        month = m;
+        day = d;
+        if (!checkValid()) {
+            cout << "Illegal" << endl;
+            exit(0);
+        }
+    }
+
+    // 显示结果
+    void display() {
+        int dayOfYear = computeDay();
+        cout << year << "-" << month << "-" << day << "是" << year << "年的第" << dayOfYear << "天" << endl;
+    }
+
+private:
+    // 闰年检查函数
+    bool checkLeap() {
+        // 闰年的条件是能被4整除且不能被100整除，或者能被400整除
+        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    }
+
+    // 日期合法性检查函数
+    bool checkValid() {
+        // 每个月的天数
+        int daysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        
+        // 如果是闰年，2月有29天
+        if (checkLeap()) {
+            daysInMonth[1] = 29;
+        }
+        
+        // 检查月份是否在1到12之间
+        if (month < 1 || month > 12) {
+            return false;
+        }
+        
+        // 检查天是否在合法范围内
+        if (day < 1 || day > daysInMonth[month - 1]) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    // 计算日期是本年中的第几天
+    int computeDay() {
+        // 每个月的天数
+        int daysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        
+        // 如果是闰年，2月有29天
+        if (checkLeap()) {
+            daysInMonth[1] = 29;
+        }
+        
+        // 计算当前日期是本年中的第几天
+        int dayOfYear = 0;
+        for (int i = 0; i < month - 1; i++) {
+            dayOfYear += daysInMonth[i];
+        }
+        dayOfYear += day;
+        
+        return dayOfYear;
+    }
+
+    int year;
+    int month;
+    int day;
+};
+
+int main() {
+    int y1, m1, d1;
+    int y2, m2, d2;
+
+    cout << "请输入一个日期:" << endl;
+    cin >> y1 >> m1 >> d1;
+
+    dateToDay date1(y1, m1, d1);
+    date1.display();
+
+    cin >> y2 >> m2 >> d2;
+
+    dateToDay date2(y2, m2, d2);
+    date2.display();
+
+    return 0;
+}

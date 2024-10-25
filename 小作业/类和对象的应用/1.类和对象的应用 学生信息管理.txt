@@ -1,0 +1,133 @@
+类和对象的使用-1-学生信息库建立
+时间限制	1000ms	空间限制	256MB
+
+定义一个学生（Student）对象，内置五个学生的数据，对象属性包括学生名字、学号、语文成绩、数学成绩、英语成绩、平均成绩。其中，定义一个函数计算得出平均成绩。
+
+定义一个函数输出学生的信息。
+
+输入数据说明
+一共 5 行，每行 5 个值， 分别是 1 个字符和 4 个整数，分别代表每个学生的名字、学号、语文成绩、数学成绩和英语成绩，中间用空格分隔开。
+不需要考虑输入错误，所有整数类型为 int32。
+输出格式说明
+按照给定的示例格式给出所有学生信息。
+程序应给出相应的人性化提示。
+测试样例
+输入：
+
+tom 2312001 98 84 88
+marry 2312002 89 67 96
+john 2312003 74 88 100
+sophia 2312004 91 75 88
+jerry 2312005 61 79 60 
+输出：
+
+==学生信息==
+姓名：tom
+学号：2312001
+====成绩====
+语文成绩：98
+数学成绩：84
+英语成绩：88
+平均成绩：90
+
+==学生信息==
+姓名：marry
+学号：2312002
+====成绩====
+语文成绩：89
+数学成绩：67
+英语成绩：96
+平均成绩：84
+
+==学生信息==
+姓名：john
+学号：2312003
+====成绩====
+语文成绩：74
+数学成绩：88
+英语成绩：100
+平均成绩：87.3333
+
+==学生信息==
+姓名：sophia
+学号：2312004
+====成绩====
+语文成绩：91
+数学成绩：75
+英语成绩：88
+平均成绩：84.6667
+
+==学生信息==
+姓名：jerry
+学号：2312005
+====成绩====
+语文成绩：61
+数学成绩：79
+英语成绩：60
+平均成绩：66.6667
+
+
+#include <iostream>
+#include <iomanip>
+#include <string>
+
+using namespace std;
+
+// 定义学生类
+class Student {
+private:
+    string name;      // 学生姓名
+    int id;           // 学号
+    int chinese;      // 语文成绩
+    int math;         // 数学成绩
+    int english;      // 英语成绩
+    double average;   // 平均成绩
+
+public:
+    // 构造函数
+    Student(string n, int i, int c, int m, int e) 
+        : name(n), id(i), chinese(c), math(m), english(e) {
+        average = calculateAverage();  // 计算平均成绩
+    }
+
+    // 计算平均成绩的函数
+    double calculateAverage() {
+        return (chinese + math + english) / 3.0;
+    }
+
+    // 输出学生信息的函数
+    void printInfo() {
+        cout << "==学生信息==" << endl;
+        cout << "姓名：" << name << endl;
+        cout << "学号：" << id << endl;
+        cout << "====成绩====" << endl;
+        cout << "语文成绩：" << chinese << endl;
+        cout << "数学成绩：" << math << endl;
+        cout << "英语成绩：" << english << endl;
+        // 输出平均成绩保留4位小数
+        cout << "平均成绩：" << fixed << setprecision(4) << average << endl;
+        cout << endl;
+    }
+};
+
+int main() {
+    // 创建一个数组来存储5个学生对象
+    Student* students[5];
+
+    // 循环接收5行输入
+    for (int i = 0; i < 5; i++) {
+        string name;
+        int id, chinese, math, english;
+        cin >> name >> id >> chinese >> math >> english;
+        students[i] = new Student(name, id, chinese, math, english);  // 动态分配学生对象
+    }
+
+    // 输出所有学生的信息
+    for (int i = 0; i < 5; i++) {
+        students[i]->printInfo();
+        delete students[i];  // 释放动态分配的内存
+    }
+
+    return 0;
+}
+
