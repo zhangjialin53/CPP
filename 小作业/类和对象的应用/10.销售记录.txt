@@ -92,3 +92,103 @@ img
 选择语言：
 c++
 1
+
+
+
+#include <iostream>
+#include <iomanip>
+#include <cstring>
+using namespace std;
+
+class Book_Sale {
+private:
+    char* isbn;               // 动态分配存放 ISBN 号
+    int sales_volume;         // 销量
+    double original_price;    // 原价
+    double real_price;        // 现价
+    double discount;          // 折扣
+    double gross_sales;       // 总销售额
+
+    // 使用权重计算 ISBN 校验位
+    int calculateCheckDigit(const char* isbn_base) {
+        int sum = 0;
+        int weights[] = { 1, 3 }; // 交替权重
+        int index = 0; // 用于追踪权重位置
+
+        for (int i = 0; i < 17; i++) {
+            if (isbn_base[i] != '-') {
+                sum += (isbn_base[i] - '0') * weights[index % 2];
+                index++;
+            }
+        }
+        int r = (10 - (sum % 10)) % 10; // 初步计算校验码
+
+        // 根据特殊规则调整校验码
+        if (r == 8) r = 0;
+        else if (r == 9) r = 1;
+        else r += 2;
+
+        return r;
+    }
+
+public:
+    // 默认构造函数
+    Book_Sale() {
+        isbn = new char[18];
+        sales_volume = 0;
+        original_price = 0.0;
+        real_price = 0.0;
+        discount = 0.0;
+        gross_sales = 0.0;
+    }
+
+    // 析构函数：释放动态分配的 ISBN 内存
+    ~Book_Sale() {
+        delete[] isbn;
+    }
+
+    // 成员函数：设置数据并计算所需字段
+    void setData(int isbn_part4, int volume, double price, double disc) {
+        sales_volume = volume;
+        original_price = price;
+        discount = disc;
+
+        // 创建前 12 位的 ISBN
+        snprintf(isbn, 18, "978-7-121-%05d-", isbn_part4);
+
+        // 计算并附加校验码
+        int check_digit = calculateCheckDigit(isbn);
+        snprintf(isbn + strlen(isbn), 2, "%d", check_digit);
+
+        // 计算现价和总销售额
+        real_price = original_price * discount;
+        gross_sales = real_price * sales_volume;
+    }
+
+    // 显示所有信息
+    void display() const {
+        cout << "该书的ISBN号为:" << isbn << endl;
+        cout << "销量为:" << sales_volume << "本 "
+            << "原价为:" << fixed << setprecision(10) << original_price << "元 "
+            << "折扣为:" << discount << " "
+            << "现价为:" << real_price << "元 "
+            << "总销售额为:" << gross_sales << "元" << endl;
+    }
+};
+
+int main() {
+    int isbn_part4, volume;
+    double price, discount;
+    Book_Sale book;
+
+    // 统一循环输入所有书籍信息
+    cout << "请输入ISBN第四段、销售量、原价和折扣(以-1结束): " << endl;
+    while (cin >> isbn_part4 && isbn_part4 != -1) {
+        cin >> volume >> price >> discount;
+        book.setData(isbn_part4, volume, price, discount);
+        book.display();
+        cout << "请输入ISBN第四段、销售量、原价和折扣(以-1结束): " << endl;
+    }
+
+    return 0;
+}
